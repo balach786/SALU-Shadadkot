@@ -85,14 +85,45 @@ export default function OnlineApply() {
         return;
       }
 
-      const fd = new FormData();
-      fd.append("action", "apply");
-      Object.entries(values).forEach(([k, v]) => fd.append(k, String(v)));
-      if (photo) fd.append("photo", photo);
-      if (documents) fd.append("documents", documents);
-      if (feeSlip) fd.append("feeSlip", feeSlip);
+      const fileToBase64 = (file: File): Promise<{ name: string; mimeType: string; base64: string }> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            const base64 = result.split(",")[1];
+            resolve({
+              name: file.name,
+              mimeType: file.type,
+              base64,
+            });
+          };
+          reader.onerror = (error) => reject(error);
+          reader.readAsDataURL(file);
+        });
+      };
 
-      const res = await fetch("/api/proxy", { method: "POST", body: fd });
+      const payload: any = {
+        action: "apply",
+        ...values,
+      };
+
+      if (photo) {
+        payload.photo = await fileToBase64(photo);
+      }
+      if (documents) {
+        payload.documents = await fileToBase64(documents);
+      }
+      if (feeSlip) {
+        payload.feeSlip = await fileToBase64(feeSlip);
+      }
+
+      const res = await fetch("/api/proxy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Submission failed");
 

@@ -38,9 +38,15 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    const action = (e.parameter.action || '').toLowerCase();
-    if (action === 'apply')   return jsonOut(handleApply(e));
-    if (action === 'contact') return jsonOut(handleContact(e));
+    let p = {};
+    if (e.postData && e.postData.type === 'application/json') {
+      p = JSON.parse(e.postData.contents);
+    } else {
+      p = e.parameter;
+    }
+    const action = (p.action || '').toLowerCase();
+    if (action === 'apply')   return jsonOut(handleApply(p));
+    if (action === 'contact') return jsonOut(handleContact(p));
     return jsonOut({ ok: false, error: 'Unknown action' });
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
@@ -54,8 +60,7 @@ function jsonOut(obj) {
 }
 
 // ============ APPLY ============
-function handleApply(e) {
-  const p = e.parameter;
+function handleApply(p) {
   const required = ['fullName','fatherName','cnic','dob','gender','phone','email','address','program'];
   for (const k of required) {
     if (!p[k] || String(p[k]).trim() === '') throw new Error('Missing required field: ' + k);
@@ -84,11 +89,20 @@ function handleApply(e) {
   // Application ID
   const applicationId = nextApplicationId(sh);
 
-  // Files (e.files is provided by Apps Script when multipart/form-data is posted)
-  const files = (e.files || {});
-  const photoUrl    = files.photo     ? uploadBlob_(files.photo, appFolder, applicationId + '-photo') : '';
-  const docsUrl     = files.documents ? uploadBlob_(files.documents, appFolder, applicationId + '-docs') : '';
-  const feeSlipUrl  = files.feeSlip   ? uploadBlob_(files.feeSlip, appFolder, applicationId + '-fee') : '';
+  // Files
+  let photoUrl    = '';
+  let docsUrl     = '';
+  let feeSlipUrl  = '';
+
+  if (p.photo && p.photo.base64) {
+    photoUrl = uploadBase64_(p.photo, appFolder, applicationId + '-photo');
+  }
+  if (p.documents && p.documents.base64) {
+    docsUrl = uploadBase64_(p.documents, appFolder, applicationId + '-docs');
+  }
+  if (p.feeSlip && p.feeSlip.base64) {
+    feeSlipUrl = uploadBase64_(p.feeSlip, appFolder, applicationId + '-fee');
+  }
 
   // QR code (uses Google Charts QR endpoint — kept as URL, no extra deps)
   const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' +
@@ -194,6 +208,14 @@ function nextApplicationId(sh) {
 
 function uploadBlob_(blob, folder, baseName) {
   const ext = (blob.getName().split('.').pop() || 'bin').toLowerCase();
+  const file = folder.createFile(blob.setName(baseName + '.' + ext));
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return file.getUrl();
+}
+
+function uploadBase64_(fileObj, folder, baseName) {
+  const blob = Utilities.newBlob(Utilities.base64Decode(fileObj.base64), fileObj.mimeType, fileObj.name);
+  const ext = (fileObj.name.split('.').pop() || 'bin').toLowerCase();
   const file = folder.createFile(blob.setName(baseName + '.' + ext));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   return file.getUrl();

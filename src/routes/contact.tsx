@@ -35,8 +35,21 @@ function ContactPage() {
     setStatus("sending");
     try {
       const fd = new FormData(e.currentTarget);
-      fd.append("action", "contact");
-      await fetch("/api/proxy", { method: "POST", body: fd });
+      const payload = {
+        action: "contact",
+        name: fd.get("name"),
+        email: fd.get("email"),
+        phone: fd.get("phone"),
+        subject: fd.get("subject"),
+        message: fd.get("message"),
+      };
+      await fetch("/api/proxy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
       setStatus("ok");
       e.currentTarget.reset();
     } catch {
