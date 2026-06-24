@@ -108,11 +108,27 @@ function handleApply(p) {
   const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' +
     encodeURIComponent(applicationId);
 
+  // Base64 Data URIs for PDF embedding to bypass Google PDF network restrictions
+  let photoDataUri = '';
+  if (p.photo && p.photo.base64) {
+    photoDataUri = 'data:' + p.photo.mimeType + ';base64,' + p.photo.base64;
+  }
+
+  let qrDataUri = '';
+  try {
+    const qrResponse = UrlFetchApp.fetch(qrUrl);
+    const qrBase64 = Utilities.base64Encode(qrResponse.getBlob().getBytes());
+    qrDataUri = 'data:image/png;base64,' + qrBase64;
+  } catch (err) {
+    // Fallback to normal URL if fetch fails
+    qrDataUri = qrUrl;
+  }
+
   // Card PDF
   const cardPdf = generateAdmissionCardPdf_({
     applicationId: applicationId,
     fullName: p.fullName, fatherName: p.fatherName, cnic: p.cnic,
-    program: p.program, dob: p.dob, photoUrl: photoUrl, qrUrl: qrUrl,
+    program: p.program, dob: p.dob, photoUrl: photoDataUri, qrUrl: qrDataUri,
   }, appFolder);
 
   const row = [
@@ -210,7 +226,7 @@ function uploadBlob_(blob, folder, baseName) {
   const ext = (blob.getName().split('.').pop() || 'bin').toLowerCase();
   const file = folder.createFile(blob.setName(baseName + '.' + ext));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return file.getUrl();
+  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
 }
 
 function uploadBase64_(fileObj, folder, baseName) {
@@ -218,7 +234,7 @@ function uploadBase64_(fileObj, folder, baseName) {
   const ext = (fileObj.name.split('.').pop() || 'bin').toLowerCase();
   const file = folder.createFile(blob.setName(baseName + '.' + ext));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  return file.getUrl();
+  return 'https://drive.google.com/uc?export=view&id=' + file.getId();
 }
 
 function readSheet(name) {
