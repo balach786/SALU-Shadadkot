@@ -102,9 +102,22 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1" async></script>
       </head>
       <body>
         {children}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: `
+              <df-messenger
+                intent="WELCOME"
+                chat-title="SALU–ShahdadkotCampus"
+                agent-id="ed0fbec6-913b-4099-a3f2-dd3ba723d240"
+                language-code="en"
+              ></df-messenger>
+            `,
+          }}
+        />
         <Scripts />
       </body>
     </html>

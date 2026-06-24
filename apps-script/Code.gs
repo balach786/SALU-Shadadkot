@@ -67,8 +67,13 @@ function handleApply(e) {
 
   // Duplicate CNIC check
   const cnicCol = 5; // matches header order below
-  const data = sh.getRange(2, cnicCol, Math.max(0, sh.getLastRow() - 1), 1).getValues();
-  if (data.some(r => String(r[0]).trim() === p.cnic.trim())) {
+  const lastRow = sh.getLastRow();
+  let duplicate = false;
+  if (lastRow > 1) {
+    const data = sh.getRange(2, cnicCol, lastRow - 1, 1).getValues();
+    duplicate = data.some(r => String(r[0]).trim() === p.cnic.trim());
+  }
+  if (duplicate) {
     throw new Error('This CNIC has already been registered.');
   }
 
