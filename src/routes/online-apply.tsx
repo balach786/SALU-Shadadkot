@@ -92,7 +92,7 @@ export default function OnlineApply() {
       if (documents) fd.append("documents", documents);
       if (feeSlip) fd.append("feeSlip", feeSlip);
 
-      const res = await fetch(APPS_SCRIPT_URL, { method: "POST", body: fd });
+      const res = await fetch("/api/proxy", { method: "POST", body: fd });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Submission failed");
 

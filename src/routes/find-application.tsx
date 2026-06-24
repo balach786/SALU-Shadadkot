@@ -49,10 +49,7 @@ function FindApplication() {
       return;
     }
     try {
-      const url = new URL(APPS_SCRIPT_URL);
-      url.searchParams.set("action", "find");
-      url.searchParams.set("cnic", value);
-      const res = await fetch(url.toString());
+      const res = await fetch(`/api/proxy?action=find&cnic=${encodeURIComponent(value)}`);
       const json = await res.json();
       if (!json.ok) {
         setState(json.notFound ? "notfound" : "err");

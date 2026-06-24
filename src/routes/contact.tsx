@@ -36,7 +36,7 @@ function ContactPage() {
     try {
       const fd = new FormData(e.currentTarget);
       fd.append("action", "contact");
-      await fetch(APPS_SCRIPT_URL, { method: "POST", body: fd });
+      await fetch("/api/proxy", { method: "POST", body: fd });
       setStatus("ok");
       e.currentTarget.reset();
     } catch {
