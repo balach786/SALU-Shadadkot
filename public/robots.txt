@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap will be added once a project URL or custom domain is configured.

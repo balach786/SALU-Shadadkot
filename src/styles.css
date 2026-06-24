@@ -1,0 +1,126 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Shah Abdul Latif Bhattai University — Shadadkot Campus
+ * Theme: Royal Blue + Gold + White
+ * Primary blue: #0B3D91, Gold: #C9A227
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --shadow-elegant: 0 12px 32px -12px color-mix(in oklab, var(--primary) 30%, transparent);
+  --shadow-card: 0 4px 16px -4px oklch(0 0 0 / 0.08);
+  --gradient-hero: linear-gradient(135deg, oklch(0.28 0.12 264) 0%, oklch(0.20 0.10 265) 100%);
+  --gradient-gold: linear-gradient(135deg, oklch(0.78 0.13 85) 0%, oklch(0.68 0.16 75) 100%);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0.03 265);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.03 265);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 265);
+
+  /* Royal blue #0B3D91 */
+  --primary: oklch(0.32 0.15 265);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --primary-dark: oklch(0.22 0.13 266);
+
+  --secondary: oklch(0.97 0.01 250);
+  --secondary-foreground: oklch(0.22 0.13 266);
+
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.50 0.03 260);
+
+  --accent: oklch(0.95 0.04 85);
+  --accent-foreground: oklch(0.30 0.10 80);
+
+  /* Gold #C9A227 */
+  --gold: oklch(0.74 0.14 85);
+  --gold-foreground: oklch(0.20 0.05 80);
+
+  --destructive: oklch(0.58 0.24 27);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.62 0.16 152);
+  --success-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.91 0.015 255);
+  --input: oklch(0.93 0.015 255);
+  --ring: oklch(0.32 0.15 265);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility section {
+  padding-block: 4rem;
+}
+@utility container-narrow {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@utility btn-gold {
+  background: var(--gradient-gold);
+  color: var(--gold-foreground);
+  font-weight: 600;
+  &:hover { filter: brightness(1.05); }
+}
+@utility text-balance {
+  text-wrap: balance;
+}
