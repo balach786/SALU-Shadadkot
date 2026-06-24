@@ -18,7 +18,8 @@ export const Route = createFileRoute("/api/proxy")({
         try {
           const url = new URL(request.url);
           const searchParams = url.searchParams.toString();
-          const targetUrl = `${APPS_SCRIPT_URL}${searchParams ? `?${searchParams}` : ""}`;
+          const separator = APPS_SCRIPT_URL.includes("?") ? "&" : "?";
+          const targetUrl = `${APPS_SCRIPT_URL}${searchParams ? `${separator}${searchParams}` : ""}`;
 
           const response = await fetch(targetUrl, {
             method: "GET",
